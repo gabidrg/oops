@@ -1,0 +1,129 @@
+<?php
+
+/**
+ * @file
+ * The Oops Logic module provides various business logic/workflow functionality for the platform.
+ */
+
+function oops_logic_node_presave($node) {
+    switch ($node->type) {
+        case 'mentor_group':
+            $node->field_group_members[LANGUAGE_NONE][0]['value'] = count(oops_utils_query_og_members($node->nid, 1));
+            break;
+    }
+}
+
+
+function oops_logic_node_view_alter(&$build) {
+    //dsm($build);
+}
+
+/**
+ * Acts on a OG membership being inserted or updated.
+ *
+ * When a new group application is created we check group limits
+ * If somehow the group limit is reached we close the group and eventually reject application
+ *
+ * This hook is invoked before the OG membership is saved to the database.
+ *
+ * @param OgMembership $og_membership
+ *   The OG membership that is being inserted or updated.
+ *
+ * @see hook_entity_presave()
+ */
+function oops_logic_og_membership_update(OgMembership $og_membership) {
+    if ($og_membership->entity_type == 'user') {
+        $new_status = $og_membership->state;
+        $old_status = $og_membership->original->state;
+        $group = entity_load_single($og_membership->group_type, $og_membership->gid);
+        $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'];
+        $active_members = count(oops_utils_query_og_members($og_membership->gid, 1));
+
+        // CLOSE GROUP
+        // pending to active
+        if ($old_status == 1 && $new_status == 2) {
+
+        }
+
+        switch ($new_status) {
+            case 1:
+
+        }
+
+
+        // OPEN GROUP
+        // current status delete
+
+        //dsm($limit);
+        //dsm($active_members);
+        dsm($og_membership);
+        dsm(get_defined_vars());
+        // update group member count
+        $updated = FALSE;
+        if (!$updated) {
+            $group->field_group_members[LANGUAGE_NONE][0]['value'] = $active_members;
+            entity_save($og_membership->group_type, $group);
+            $updated = TRUE;
+        }
+
+    }
+}
+
+function oops_logic_form_og_ui_edit_membership_alter(&$form, &$form_state, $form_id) {
+    $form['#validate'][] = 'oops_logic_og_ui_edit_membership_validate';
+}
+
+function oops_logic_og_ui_edit_membership_validate($form, &$form_state) {
+    dsm($form_state['values']);
+    $values = $form_state['values'];
+    $og_membership = $form_state['og_membership'];
+    $new_status = $values['state'];
+    $old_status = $og_membership->state;
+    $group = entity_load_single($og_membership->group_type, $og_membership->gid);
+    $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'];
+    $active_members = count(oops_utils_query_og_members($og_membership->gid, 1));
+    // pending member is approved, check availability
+    if (($old_status ==2 && $new_status == 1) && $active_members >= $limit) {
+        form_set_error('submit', t('You can no longer add members to this group. This group has reached its maximum number of members! Consider increasing group membership limit.'));
+    }
+}
+
+/**
+ * Confirm subscribe form.
+ */
+function oops_logic_form_og_ui_confirm_subscribe_alter(&$form, &$form_state, $form_id) {
+    $form['#validate'][] = 'oops_logic_og_ui_confirm_subscribe_validate';
+}
+
+/**
+ * Custom validate handler; Confirm OG membership.
+ *
+ * If group limit is reached while user submits join we invalidate the form and force group to invite only
+ */
+function oops_logic_og_ui_confirm_subscribe_validate($form, &$form_state) {
+    $group_type = $form_state['values']['group_type'];
+    $gid = $form_state['values']['gid'];
+    $group = entity_load_single($group_type, $gid);
+    $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'];
+    $query = new EntityFieldQuery();
+    $query
+        ->entityCondition('entity_type', 'og_membership', '=')
+        ->propertyCondition('entity_type', 'user', '=')
+        ->propertyCondition('gid', $gid, '=')
+        ->propertyCondition('state', 1, '=');
+    $result = $query->execute();
+    $members = count($result['og_membership']);
+    if ($members >= $limit) {
+        $subscribe_model = $group->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'];
+        if ($subscribe_model != 'invitation') {
+            $group->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'] = 'invitation';
+            node_save($group);
+        }
+        form_set_error('submit', t('You can no longer join this group. This group has reached its maximum number of members!'));
+    }
+}
+
+
+// TODO: form alter group edit and if limit < members only allow invite membership
+// TODO: form alter group admin form and set group model to invitation when new members approved and limit is reached
+// TODO: form alter group admin form and set group model to approval when users are deleted and places are made available

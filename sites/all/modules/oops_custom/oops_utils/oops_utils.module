@@ -1,0 +1,162 @@
+<?php
+
+/**
+ * @file
+ * The Oops Utils module provides various custom functionality for the platform.
+ */
+
+/**
+ * Implements hook_menu_alter().
+ *
+ * Disable normal user registration, we only user custom paths to assign user roles at registration time
+ */
+function oops_utils_menu_alter(&$items) {
+    // dsm($items);
+    // unset($items['user/register']);
+}
+
+/**
+ * Implements hook_block_info().
+ *
+ * @return array
+ */
+function oops_utils_block_info() {
+    $blocks['oops_login_button'] = array(
+        'info' => t('Oops Login button'),
+        'cache' => DRUPAL_CACHE_GLOBAL,
+    );
+
+    $blocks['oops_signup_student'] = array(
+        'info' => t('Oops Signup Student'),
+        'cache' => DRUPAL_CACHE_GLOBAL,
+    );
+
+    $blocks['oops_signup_mentor'] = array(
+        'info' => t('Oops Signup Mentor'),
+        'cache' => DRUPAL_CACHE_GLOBAL,
+    );
+
+    return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * @return array
+ */
+function oops_utils_block_view($delta = '') {
+    $block = array();
+
+    switch ($delta) {
+        case 'oops_login_button':
+            $block['content'] = '';
+            $block['content'] .= l(t('Login'), 'user/login', array('attributes' => array('class' => 'commons-login')));
+            $block['subject'] = '';
+            break;
+
+        case 'oops_signup_student':
+            $block['subject'] = '';
+            $block['content'] = '';
+            if (user_is_anonymous()) {
+                $block['content'] .= l(t('Signup as Student'), 'student/register', array('attributes' => array('class' => 'commons-login')));
+            }
+            else {
+                $block['content'] .= l(t('Visit your Mentor'), 'user', array('attributes' => array('class' => 'commons-login')));
+                }
+            break;
+
+        case 'oops_signup_mentor':
+            $block['subject'] = '';
+            $block['content'] = '';
+            if (user_is_anonymous()) {
+                $block['content'] .= l(t('Signup as Mentor'), 'mentor/register', array('attributes' => array('class' => 'commons-login')));
+            }
+            else {
+                $block['content'] .= l(t('Visit your Students'), 'user', array('attributes' => array('class' => 'commons-login')));
+            }
+            break;
+            break;
+
+    }
+    return $block;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function oops_utils_form_alter(&$form, &$form_state, $form_id) {
+    if ($form_id == 'user_profile_form') {
+        $form['#theme'] = array('user_profile_form');
+    }
+}
+
+function oops_utils_theme($existing, $type, $theme, $path){
+    return array(
+        'user_profile_form' => array(
+            'arguments' => array('form' => null),
+            'path' => drupal_get_path('theme', 'oops_responsive').'/templates/',
+            'template' => 'user-profile-form', //name of your template file, it can be anything
+            'render element' => 'form'
+        )
+    );
+}
+
+/**
+ * Implements hook_element_info_alter()
+ * Temporary fix for a bug that rewrites settings var, erasing settings.password values in user.js
+ */
+function oops_utils_element_info_alter(&$type) {
+    $type['password_confirm'] = array(
+        '#input' => TRUE,
+        '#process' => array('form_process_password_confirm', 'user_form_process_password_confirm', 'oops_utils_user_form_process_password_confirm'),
+        '#theme_wrappers' => array('form_element'),
+    );
+    return $type;
+}
+
+function oops_utils_user_form_process_password_confirm($element) {
+    global $user;
+
+    $js_settings = array(
+        'password' => array(
+            'strengthTitle' => t('Password strength:'),
+            'hasWeaknesses' => t('To make your password stronger:'),
+            'tooShort' => t('Make it at least 6 characters'),
+            'addLowerCase' => t('Add lowercase letters'),
+            'addUpperCase' => t('Add uppercase letters'),
+            'addNumbers' => t('Add numbers'),
+            'addPunctuation' => t('Add punctuation'),
+            'sameAsUsername' => t('Make it different from your username'),
+            'confirmSuccess' => t('yes'),
+            'confirmFailure' => t('no'),
+            'weak' => t('Weak'),
+            'fair' => t('Fair'),
+            'good' => t('Good'),
+            'strong' => t('Strong'),
+            'confirmTitle' => t('Passwords match:'),
+            'username' => (isset($user->name) ? $user->name : ''),
+        ),
+    );
+
+    $element['#attached']['js'][] = drupal_get_path('module', 'user') . '/user.js';
+    $element['#attached']['js'][] = array(
+            'data' => $js_settings,
+            'type' => 'setting',
+        );
+
+    return $element;
+}
+
+function oops_utils_query_og_members($gid, $state = NULL) {
+    $query = new EntityFieldQuery();
+    $query
+        ->entityCondition('entity_type', 'og_membership', '=')
+        ->propertyCondition('entity_type', 'user', '=')
+        ->propertyCondition('gid', $gid, '=');
+    if ($state != NULL) {
+        $query->propertyCondition('state', $state, '=');
+    }
+    $result = $query->execute();
+    $members = isset($result['og_membership']) ? $result['og_membership'] : array();
+    return $members;
+}

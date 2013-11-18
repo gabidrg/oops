@@ -1,0 +1,83 @@
+/* TODO
+ * webfont: Arvo, Arvo Bold
+ * #43105f
+ *
+ */
+
+html {
+    background-color: #ffffff;
+}
+body  {
+    background-color: #ffffff !important;
+}
+.page-home .node-page.user-picture-available {
+    padding-left: 0;
+    position: relative;
+}
+.page-home .node-page .user-picture {
+    display: none;
+}
+button, [type="reset"], [type="submit"], [type="button"], [class*="action-item"], .commons-login {
+    background: linear-gradient(#FFFFFF, #F1F1F1) repeat scroll 0 0 rgba(0, 0, 0, 0);
+    border-color: #CBCBCB;
+    text-shadow: -1px 1px 2px #FFFFFF, -1px -1px 2px #FFFFFF, 1px -1px 2px #FFFFFF, 1px 1px 2px #FFFFFF;
+}
+.page-home .commons-sign-up, .page-home .commons-login {
+    font-size: 1.5em;
+    padding: 0.5em 2em;
+}
+.palette-black-white-red .header-color-row-two {
+    background-color: #ffffff;
+    border-bottom: none;
+    border-top: none /*1px solid #525252*/;
+}
+.palette-black-white-red .header-color-row-one {
+    background-color: #ffffff;
+    border-top: none;
+    padding-top: 20px;
+}
+
+.logged-in .page {
+    background-color: #ffffff;
+}
+h2 {
+    color: #43105f !important;
+    padding: 20px 0 20px;
+}
+
+.page-home .region-three-33-top {
+    margin-bottom: 40px;
+    text-shadow: 1px 1px 2px rgba(150, 150, 150, 1);
+}
+
+/* Main navigation */
+#header a {
+    color: #43105f;
+}
+#menu-bar.nav ul.menu li:hover, #menu-bar.nav ul.menu li.active-trail {
+    background: none;
+}
+.palette-black-white-red #menu-bar.nav ul.menu li a, #menu-bar.nav ul.menu li .palette-black-white-red a {
+    border: none !important;
+    box-shadow: none;
+    background: none transparent;
+}
+#menu-bar.nav ul.menu li a {
+    -moz-box-sizing: border-box;
+    background-position: center 10px;
+    background-repeat: no-repeat;
+    display: block;
+    font-size: 1.2em;
+    height: 4em;
+    margin-bottom: -9998em;
+    padding: 1.4em 0.8125em 9999em;
+    position: relative;
+    text-shadow: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    z-index: 1;
+}
+.palette-black-white-red #menu-bar.nav {
+    border-right: none;
+    box-shadow: none;
+}

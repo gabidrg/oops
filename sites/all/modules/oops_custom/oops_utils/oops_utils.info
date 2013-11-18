@@ -1,0 +1,5 @@
+name = Oops Utils
+description = "Provides various custom functions for OpeningOpportunities platform."
+core = 7.x
+; files[] = oops_utils.test
+; configure = admin/config/oops

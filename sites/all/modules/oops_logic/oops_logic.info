@@ -1,0 +1,5 @@
+name = Oops Logic
+description = "Implements platform business logic and workflows."
+core = 7.x
+; files[] = oops_logic.test
+; configure = admin/config/oops/logic
