@@ -36,6 +36,11 @@ function oops_utils_block_info() {
         'cache' => DRUPAL_CACHE_GLOBAL,
     );
 
+    $blocks['oops_signup_librarian'] = array(
+        'info' => t('Oops Signup Librarian'),
+        'cache' => DRUPAL_CACHE_GLOBAL,
+    );
+
     return $blocks;
 }
 
@@ -58,7 +63,7 @@ function oops_utils_block_view($delta = '') {
             $block['subject'] = '';
             $block['content'] = '';
             if (user_is_anonymous()) {
-                $block['content'] .= l(t('Signup as Student'), 'student/register', array('attributes' => array('class' => 'commons-login')));
+                $block['content'] .= l(t('Signup as Student'), 'student/register', array('attributes' => array('class' => 'signup-student')));
             }
             else {
                 $block['content'] .= l(t('Visit your Mentor'), 'user', array('attributes' => array('class' => 'commons-login')));
@@ -69,12 +74,22 @@ function oops_utils_block_view($delta = '') {
             $block['subject'] = '';
             $block['content'] = '';
             if (user_is_anonymous()) {
-                $block['content'] .= l(t('Signup as Mentor'), 'mentor/register', array('attributes' => array('class' => 'commons-login')));
+                $block['content'] .= l(t('Signup as Mentor'), 'mentor/register', array('attributes' => array('class' => 'signup-mentor')));
             }
             else {
                 $block['content'] .= l(t('Visit your Students'), 'user', array('attributes' => array('class' => 'commons-login')));
             }
             break;
+
+        case 'oops_signup_librarian':
+            $block['subject'] = '';
+            $block['content'] = '';
+            if (user_is_anonymous()) {
+                $block['content'] .= l(t('Signup as Librarian'), 'librarian/register', array('attributes' => array('class' => 'signup-librarian')));
+            }
+            else {
+                $block['content'] .= l(t('Visit your Students'), 'user', array('attributes' => array('class' => 'commons-login')));
+            }
             break;
 
     }
@@ -88,6 +103,9 @@ function oops_utils_form_alter(&$form, &$form_state, $form_id) {
     if ($form_id == 'user_profile_form') {
         $form['#theme'] = array('user_profile_form');
     }
+  if ($form_id == 'user_register_form') {
+    $form['#theme'] = array('user_register_form');
+  }
 }
 
 function oops_utils_theme($existing, $type, $theme, $path){
@@ -96,6 +114,12 @@ function oops_utils_theme($existing, $type, $theme, $path){
             'arguments' => array('form' => null),
             'path' => drupal_get_path('theme', 'oops_responsive').'/templates/',
             'template' => 'user-profile-form', //name of your template file, it can be anything
+            'render element' => 'form'
+        ),
+        'user_register_form' => array(
+            'arguments' => array('form' => null),
+            'path' => drupal_get_path('theme', 'oops_responsive').'/templates/',
+            'template' => 'user-register-form', //name of your template file, it can be anything
             'render element' => 'form'
         )
     );
@@ -159,4 +183,8 @@ function oops_utils_query_og_members($gid, $state = NULL) {
     $result = $query->execute();
     $members = isset($result['og_membership']) ? $result['og_membership'] : array();
     return $members;
+}
+
+function oops_responsive_page_build(&$page) {
+  dsm($page);
 }

@@ -9,10 +9,14 @@ html {
 }
 body  {
     background-color: #ffffff !important;
+    line-height: 1.5em;
 }
 .page-home .node-page.user-picture-available {
     padding-left: 0;
     position: relative;
+}
+#block-commons-utility-links-commons-utility-links {
+    margin: 15px 0 0;
 }
 .page-home .node-page .user-picture {
     display: none;
@@ -22,9 +26,20 @@ button, [type="reset"], [type="submit"], [type="button"], [class*="action-item"]
     border-color: #CBCBCB;
     text-shadow: -1px 1px 2px #FFFFFF, -1px -1px 2px #FFFFFF, 1px -1px 2px #FFFFFF, 1px 1px 2px #FFFFFF;
 }
+.block-content ul.commons-utility-links .signup {
+    display: none;
+}
+.panel-pane.pane-block.pane-oops-utils-oops-login-button.no-title.block {
+    height: 100px;
+}
 .page-home .commons-sign-up, .page-home .commons-login {
+    background: none repeat scroll 0 0 #43105F;
+    color: #FFFFFF;
     font-size: 1.5em;
-    padding: 0.5em 2em;
+    padding: 5px 2em;
+    margin-top: 0;
+    text-shadow: none;
+    width: 100%;
 }
 .palette-black-white-red .header-color-row-two {
     background-color: #ffffff;
@@ -40,9 +55,11 @@ button, [type="reset"], [type="submit"], [type="button"], [class*="action-item"]
 .logged-in .page {
     background-color: #ffffff;
 }
-h2 {
+h1,h2,h3,h4,h5,h6
+{
     color: #43105f !important;
-    padding: 20px 0 20px;
+    padding: 10px 0 10px;
+    font-family: serif;
 }
 
 .page-home .region-three-33-top {
@@ -80,4 +97,297 @@ h2 {
 .palette-black-white-red #menu-bar.nav {
     border-right: none;
     box-shadow: none;
+}
+
+/** Footer */
+.footer-logos {
+    float: right;
+}
+.footer-logos .col {
+    display: inline-block;
+    margin-left: 10px;
+}
+.footer-logos .col .heading {
+    padding: 10px 0;
+    border-bottom: 1px solid #cfcfcf;
+    margin-bottom: 10px;
+}
+
+.footer-logos .col img {
+    padding: 0 10px 0 0;
+}
+
+/** Register form */
+
+#user-register-form .form-item > label {
+    display: inline-block;
+    width: 220px;
+}
+
+#user-register-form label.option {
+    width: auto;
+}
+
+#user-register-form label[for=edit-profile-student-field-facebook-url-und-0],
+#user-register-form label[for=edit-profile-mentor-field-facebook-url-und-0],
+#user-register-form label[for=edit-profile-mentor-field-twitter-url-und-0],
+#user-register-form label[for=edit-profile-mentor-field-linkedin-url-und-0],
+#user-register-form label[for=edit-profile-librarian-field-facebook-url-und-0],
+#user-register-form label[for=edit-profile-librarian-field-twitter-url-und-0],
+#user-register-form label[for=edit-profile-librarian-field-linkedin-url-und-0]
+{
+    float: left;
+}
+
+#user-register-form .form-textarea-wrapper.resizable.textarea-processed.resizable-textarea {
+    padding: 0 0 10px;
+    width: 505px;
+}
+
+#user-register-form .confirm-parent, .password-parent {
+    clear: left;
+    margin: 0;
+    width: auto;
+}
+
+.user-picture, .views-field-picture {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-radius: 3px;
+    box-shadow: none;
+    display: inline-block;
+    line-height: 0;
+    padding: 4px;
+}
+
+.region-header {
+    display: inline-block;
+    text-align: left;
+    width: 24em;
+}
+
+ul.commons-utility-links {
+    background-color: #592D72;
+    float: right;
+    padding: 10px !important;
+    width: 24em;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+ul.commons-utility-links a {
+    color: #ffffff !important;
+}
+
+.views-column {
+    float: left;
+    padding-right: 10px;
+    width: 48%;
+}
+
+.view-mentors-directory .views-field-group-group,
+.node-type-mentor-group .field-name-group-group
+{
+    background-color: #8AB6B5;
+    display: inline-block;
+    float: left;
+    margin-top: 60px;
+    padding: 5px;
+    width: 100px;
+    text-align: center;
+}
+
+.node-type-mentor-group .panel-pane.pane-entity-field.pane-node-group-group.no-title.block {
+    float: left;
+    margin-right: 10px;
+    margin-top: -10px;
+}
+
+.node-type-mentor-group .panel-pane.pane-entity-field.pane-node-field-group-members.no-title.block,
+.node-type-mentor-group .panel-pane.pane-entity-field.pane-node-field-max-group-members.no-title.block
+{
+    clear: left;
+    float: left;
+    height: 30px;
+    margin-bottom: 0;
+}
+
+.view-mentors-directory .views-field-group-group a,
+.node-type-mentor-group .field-name-group-group a
+{
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+.view-mentors-directory .views-field-group-group .subscription-type,
+.node-type-mentor-group .field-name-group-group .subscription-type
+{
+    display: none;
+}
+
+.view-mentors-directory .views-field-picture {
+    display: inline-block;
+    float: left;
+}
+
+.view-mentors-directory .views-field-title  {
+
+}
+.view-mentors-directory .views-field-title a {
+    color: #8ab6b5 !important;
+    font-family: serif;
+    font-size: 1.875em;
+
+}
+
+.view-mentors-directory .views-field-body {
+   margin-top: 0;
+}
+
+.view-mentors-directory .views-field-body h3 {
+    height: 40px;
+}
+
+.view-mentors-directory .views-field-body h3 a {
+    color: #8AB6B5;
+}
+
+.page-group-node-subscribe h2#page-title {
+    border-top: 2px solid #cea261;
+    border-bottom: 1px solid #cea261;
+    color: #cea261 !important;
+    font-size: 2em;
+}
+
+form#og-ui-confirm-subscribe {
+    margin-top: 20px;
+}
+
+#edit-field-upload-video {
+    float: left;
+    margin-right: 20px;
+}
+
+#edit-field-application-steps {
+    float: left;
+    width: 42%;
+}
+
+#edit-field-application-steps .step-1 h3 {
+    margin-top: 0;
+}
+
+#edit-field-application-steps h3 {
+    padding: 0;
+    margin-bottom: 0;
+}
+
+#edit-field-youtube-video {
+    float: left;
+    width: 42%;
+    margin-top: 10px;
+}
+
+#edit-field-youtube-video .description {
+    display: none;
+}
+
+#edit-field-youtube-video input#edit-field-youtube-video-und-0-input {
+    paading: 10px;
+}
+
+.page-group-node-subscribe #edit-actions {
+
+}
+
+#edit-timezone--4 {
+    width: 95%;
+}
+
+.page-user .pane-user-picture {
+    float: left;
+    margin-left: 0;
+}
+.page-user .pane-user-picture .user-picture {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border-radius: 6px;
+    box-shadow: none;
+    margin-left: 0;
+    padding: 10px;
+    position: static;
+}
+
+.page-user .student-profile h3 {
+    display: none;
+}
+
+/** Calendar */
+
+.view .date-nav-wrapper .date-heading {
+    position: relative;
+    text-align: left;
+    top: 0;
+    width: 100%;
+    z-index: 0;
+}
+.view .date-nav-wrapper .date-heading h3 a {
+    color: #43105f !important;
+}
+.calendar-calendar th.days {
+    background-color: rgba(0, 0, 0, 0);
+    border: medium none;
+    color: #43105f !important;
+    font-weight: bold;
+}
+.calendar-calendar td {
+    border: 1px solid #CCCCCC;
+    color: #777777;
+    height: 20px;
+    margin: 0;
+    padding: 8px 0 !important;
+    text-align: center;
+    vertical-align: top;
+    width: 14%;
+}
+.calendar-calendar tr {
+    background-color: #FFFFFF !important;
+    margin: 0;
+    padding: 0;
+}
+.calendar-calendar tr td.today, .calendar-calendar tr.odd td.today, .calendar-calendar tr.even td.today {
+    background-color: #43105f;
+    border-radius: 20px;
+    color: #ffffff;
+}
+.pane-oops-utils-oops-signup-student .block-content {
+    border-top: 2px solid #cda05c;
+    border-bottom: 1px solid #cda05c;
+    padding: 5px 0;
+}
+.pane-oops-utils-oops-signup-mentor .block-content {
+    border-top: 2px solid #8db6ba;
+    border-bottom: 1px solid #8db6ba;
+    padding: 5px 0;
+}
+.pane-oops-utils-oops-signup-librarian .block-content{
+    border-top: 2px solid #b8c09b;
+    border-bottom: 1px solid #b8c09b;
+    padding: 5px 0;
+}
+.pane-oops-utils-oops-signup-student .block-content a,
+.pane-oops-utils-oops-signup-mentor .block-content a,
+.pane-oops-utils-oops-signup-librarian .block-content a{
+    font-family: serif;
+    font-size: 2.5em;
+    line-height: 1.2;
+    padding: 10px 0;
+}
+a.signup-student {
+    color: #cda05c !important;
+}
+a.signup-mentor {
+    color: #8db6ba !important;
+}
+a.signup-librarian {
+    color: #b8c09b !important;
 }

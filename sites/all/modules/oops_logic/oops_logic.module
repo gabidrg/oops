@@ -5,6 +5,8 @@
  * The Oops Logic module provides various business logic/workflow functionality for the platform.
  */
 
+define('MENTOR_GROUP_TYPE', 'mentor_group');
+
 function oops_logic_node_presave($node) {
     switch ($node->type) {
         case 'mentor_group':
@@ -92,7 +94,48 @@ function oops_logic_og_ui_edit_membership_validate($form, &$form_state) {
  * Confirm subscribe form.
  */
 function oops_logic_form_og_ui_confirm_subscribe_alter(&$form, &$form_state, $form_id) {
-    $form['#validate'][] = 'oops_logic_og_ui_confirm_subscribe_validate';
+
+  $group = node_load($form['gid']['#value']);
+
+  if ($group->type == MENTOR_GROUP_TYPE) {
+    // replace default membership with custom mentor_group bundle
+    $form_state['og_membership']->type = 'mentor_group';
+    $og_membership = $form_state['og_membership'];
+    field_attach_form('og_membership', $og_membership, $form, $form_state);
+
+    // unset default og_membership_default field
+    unset($form['og_membership_request']);
+    unset($form_state['field']['og_memebership_request']);
+
+    drupal_set_title(t('Apply for mentor group ' . $group->title));
+  }
+
+  $form['#validate'][] = 'oops_logic_og_ui_confirm_subscribe_validate';
+
+}
+
+function oops_logic_form_og_ui_add_users_alter($form, &$form_state, $group_type, $gid) {
+  dsm($form_state);
+  dsm($form);
+
+  $group = node_load($form['gid']['#value']);
+  if ($group->type == MENTOR_GROUP_TYPE) {
+    $form_state['og_membership']->type = 'mentor_group';
+    $og_membership = $form_state['og_membership'];
+    unset($form['membership_fields']);
+    $form['membership_fields'] = array(
+      '#prefix' => '<div id="og-ui-field-name">',
+      '#suffix' => '</div>',
+      '#tree' => TRUE,
+      '#parents' => array('membership_fields'),
+    );
+    field_attach_form('og_membership', $og_membership, $form['membership_fields'], $form_state);
+
+    unset($form_state['field']['#parents']['membership_fields']['#fields']['og_membership_request']);
+  }
+
+  dsm($form_state);
+  dsm($form);
 }
 
 /**
