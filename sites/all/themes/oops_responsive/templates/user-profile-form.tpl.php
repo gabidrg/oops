@@ -22,9 +22,9 @@
             <div class="region-inner clearfix">
                 <div id="tabs-profile">
                     <ul>
-                        <li><a href="#tabs-profile-1">Profile</a></li>
-                        <li><a href="#tabs-profile-2">Account</a></li>
-                        <li><a href="#tabs-profile-3">Settings</a></li>
+                        <li><a href="#tabs-profile-1"><?php print t('Profile'); ?></a></li>
+                        <li><a href="#tabs-profile-2"><?php print t('Account'); ?></a></li>
+                        <li><a href="#tabs-profile-3"><?php print t('Settings'); ?></a></li>
                     </ul>
                     <div id="tabs-profile-1">
                         <?php print render($form['profile_student']); ?>
