@@ -106,6 +106,10 @@ function oops_utils_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'user_register_form') {
     $form['#theme'] = array('user_register_form');
   }
+  if ($form_id == 'mentor_group_node_form') {
+    unset($form['field_group_members']);
+  }
+
 }
 
 function oops_utils_theme($existing, $type, $theme, $path){
@@ -188,3 +192,4 @@ function oops_utils_query_og_members($gid, $state = NULL) {
 function oops_responsive_page_build(&$page) {
   dsm($page);
 }
+
