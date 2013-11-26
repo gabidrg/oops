@@ -162,7 +162,8 @@ h1,h2,h3,h4,h5,h6
 
 .region-header {
     display: inline-block;
-    text-align: left;
+    margin-left: -150px;
+    margin-top: -40px;
     width: 24em;
 }
 
