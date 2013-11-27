@@ -107,7 +107,7 @@ function oops_utils_form_alter(&$form, &$form_state, $form_id) {
     $form['#theme'] = array('user_register_form');
   }
   if ($form_id == 'mentor_group_node_form') {
-    unset($form['field_group_members']);
+    $form['field_group_members']['#type'] = 'hidden';
   }
 
 }
