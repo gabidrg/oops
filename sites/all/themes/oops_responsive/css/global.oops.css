@@ -402,3 +402,13 @@ a.signup-mentor {
 a.signup-librarian {
     color: #b8c09b !important;
 }
+.rate-widget-commons_like {
+    float: left;
+    white-space: nowrap;
+    float: left;
+}
+.page-node .node nav {
+    clear: none;
+    margin-top: 20px;
+    position: relative;
+}

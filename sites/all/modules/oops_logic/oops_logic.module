@@ -115,9 +115,6 @@ function oops_logic_form_og_ui_confirm_subscribe_alter(&$form, &$form_state, $fo
 }
 
 function oops_logic_form_og_ui_add_users_alter($form, &$form_state, $group_type, $gid) {
-  dsm($form_state);
-  dsm($form);
-
   $group = node_load($form['gid']['#value']);
   if ($group->type == MENTOR_GROUP_TYPE) {
     $form_state['og_membership']->type = 'mentor_group';
@@ -133,10 +130,20 @@ function oops_logic_form_og_ui_add_users_alter($form, &$form_state, $group_type,
 
     unset($form_state['field']['#parents']['membership_fields']['#fields']['og_membership_request']);
   }
-
-  dsm($form_state);
-  dsm($form);
 }
+
+/**
+function oops_logic_og_membership_presave(OgMembership $og_membership) {
+  $og_membership->name = 'foo';
+  dsm($og_membership);
+  if ($og_membership->is_new) {
+    $group = node_load($og_membership->gid);
+    if ($group->type == MENTOR_GROUP_TYPE) {
+
+    }
+  }
+}
+ */
 
 /**
  * Custom validate handler; Confirm OG membership.
