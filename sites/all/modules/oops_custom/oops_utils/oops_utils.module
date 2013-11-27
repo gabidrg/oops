@@ -189,7 +189,5 @@ function oops_utils_query_og_members($gid, $state = NULL) {
     return $members;
 }
 
-function oops_responsive_page_build(&$page) {
-  dsm($page);
-}
+
 

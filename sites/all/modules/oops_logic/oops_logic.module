@@ -6,6 +6,8 @@
  */
 
 define('MENTOR_GROUP_TYPE', 'mentor_group');
+define('MENTOR_GROUP_MEMBERSHIP_TYPE', 'mentor_group_membership');
+
 
 function oops_logic_node_presave($node) {
     switch ($node->type) {
@@ -99,7 +101,7 @@ function oops_logic_form_og_ui_confirm_subscribe_alter(&$form, &$form_state, $fo
 
   if ($group->type == MENTOR_GROUP_TYPE) {
     // replace default membership with custom mentor_group bundle
-    $form_state['og_membership']->type = 'mentor_group';
+    $form_state['og_membership']->type = MENTOR_GROUP_MEMBERSHIP_TYPE;
     $og_membership = $form_state['og_membership'];
     field_attach_form('og_membership', $og_membership, $form, $form_state);
 
@@ -117,7 +119,7 @@ function oops_logic_form_og_ui_confirm_subscribe_alter(&$form, &$form_state, $fo
 function oops_logic_form_og_ui_add_users_alter($form, &$form_state, $group_type, $gid) {
   $group = node_load($form['gid']['#value']);
   if ($group->type == MENTOR_GROUP_TYPE) {
-    $form_state['og_membership']->type = 'mentor_group';
+    $form_state['og_membership']->type = MENTOR_GROUP_MEMBERSHIP_TYPE;
     $og_membership = $form_state['og_membership'];
     unset($form['membership_fields']);
     $form['membership_fields'] = array(
@@ -173,7 +175,53 @@ function oops_logic_og_ui_confirm_subscribe_validate($form, &$form_state) {
     }
 }
 
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Alter the privacy settings fields.
+ */
+function oops_logic_form_mentor_group_node_form_alter(&$form, &$form_state) {
+  // Wrap the privacy fields with a fieldset.
+  $form['privacy_settings'] = array(
+    '#type' => 'hidden',
+    '#title' => t('Privacy settings'),
+    '#weight' => 20,
+  );
+  $form['privacy_settings']['field_og_subscribe_settings'] = $form['field_og_subscribe_settings'];
+  unset($form['field_og_subscribe_settings']);
+
+  // Hide the settings label.
+  $form['privacy_settings']['field_og_subscribe_settings'][LANGUAGE_NONE]['#title'] = '';
+  $form['privacy_settings']['field_og_subscribe_settings'][LANGUAGE_NONE]['#required'] = FALSE;
+
+
+  $form['privacy_settings']['field_og_access_default_value'] = $form['field_og_access_default_value'];
+  unset($form['field_og_access_default_value']);
+  if (module_exists('og_access')) {
+    // Display the private content checkbox only when "Joining requires approval"
+    // is selected.
+    $form['privacy_settings']['field_og_access_default_value']['#states'] = array(
+      'visible' => array(
+        ':input[name="field_og_subscribe_settings[' . LANGUAGE_NONE . ']"]' => array('value' => 'approval'),
+      ),
+    );
+
+    $form['#after_build'] = array('commons_groups_form_group_node_after_build');
+  }
+
+  $form['#attached']['css'] = array(
+    drupal_get_path('module', 'commons_groups') . '/css/commons_groups.css',
+  );
+
+  // The group access is set on commons_groups_node_presave().
+  $form['group_access'][LANGUAGE_NONE]['#required'] = FALSE;
+  $form['group_access']['#access'] = FALSE;
+
+}
+
 
 // TODO: form alter group edit and if limit < members only allow invite membership
 // TODO: form alter group admin form and set group model to invitation when new members approved and limit is reached
 // TODO: form alter group admin form and set group model to approval when users are deleted and places are made available
+
+
