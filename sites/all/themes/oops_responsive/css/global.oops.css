@@ -412,3 +412,6 @@ a.signup-librarian {
     margin-top: 20px;
     position: relative;
 }
+.in-maintenance h1.title {
+    margin-top: 60px;
+}
