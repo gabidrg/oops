@@ -181,32 +181,20 @@ function oops_logic_og_ui_confirm_subscribe_validate($form, &$form_state) {
  * Alter the privacy settings fields.
  */
 function oops_logic_form_mentor_group_node_form_alter(&$form, &$form_state) {
-  // Wrap the privacy fields with a fieldset.
-  $form['privacy_settings'] = array(
-    '#type' => 'hidden',
-    '#title' => t('Privacy settings'),
-    '#weight' => 20,
-  );
-  $form['privacy_settings']['field_og_subscribe_settings'] = $form['field_og_subscribe_settings'];
-  unset($form['field_og_subscribe_settings']);
+  //patched
+  $form['field_og_subscribe_settings']['#type'] = 'hidden';
+  $form['field_og_subscribe_settings'][LANGUAGE_NONE]['#required'] = FALSE;
 
-  // Hide the settings label.
-  $form['privacy_settings']['field_og_subscribe_settings'][LANGUAGE_NONE]['#title'] = '';
-  $form['privacy_settings']['field_og_subscribe_settings'][LANGUAGE_NONE]['#required'] = FALSE;
-
-
-  $form['privacy_settings']['field_og_access_default_value'] = $form['field_og_access_default_value'];
-  unset($form['field_og_access_default_value']);
   if (module_exists('og_access')) {
     // Display the private content checkbox only when "Joining requires approval"
     // is selected.
-    $form['privacy_settings']['field_og_access_default_value']['#states'] = array(
+    $form['field_og_access_default_value']['#states'] = array(
       'visible' => array(
         ':input[name="field_og_subscribe_settings[' . LANGUAGE_NONE . ']"]' => array('value' => 'approval'),
       ),
     );
 
-    $form['#after_build'] = array('commons_groups_form_group_node_after_build');
+    $form['#after_build'] = array('oops_logic_form_group_node_after_build');
   }
 
   $form['#attached']['css'] = array(
@@ -216,7 +204,18 @@ function oops_logic_form_mentor_group_node_form_alter(&$form, &$form_state) {
   // The group access is set on commons_groups_node_presave().
   $form['group_access'][LANGUAGE_NONE]['#required'] = FALSE;
   $form['group_access']['#access'] = FALSE;
+dsm($form);
+}
 
+/**
+ * After build callback for the group node form.
+ *
+ * Display the private content checkbox inside the privacy settings field.
+ */
+function oops_logic_form_group_node_after_build($form, $form_state) {
+  $form['field_og_subscribe_settings'][LANGUAGE_NONE]['approval']['#suffix'] = render($form['field_og_access_default_value']);
+
+  return $form;
 }
 
 
