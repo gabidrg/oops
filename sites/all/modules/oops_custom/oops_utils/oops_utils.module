@@ -193,16 +193,18 @@ function oops_utils_query_og_members($gid, $state = NULL) {
 
 function oops_utils_username_alter(&$name, $account) {
   // Display the user's uid instead of name.
-  $profile2 = profile2_load_by_user($account);
-  if (is_array($profile2)) {
-    $profile = $profile2[current(array_keys($profile2))];
-    if (is_object($profile)) {
-      $first_name = isset($profile->field_name_first[LANGUAGE_NONE][0]['value']) ? $profile->field_name_first[LANGUAGE_NONE][0]['value'] : "";
-      $last_name = isset($profile->field_name_last[LANGUAGE_NONE][0]['value']) ? $profile->field_name_last[LANGUAGE_NONE][0]['value'] : "";
+  if ($account->uid != 0) {
+    $profile2 = profile2_load_by_user($account);
+    if (is_array($profile2)) {
+      $profile = $profile2[current(array_keys($profile2))];
+      if (is_object($profile)) {
+        $first_name = isset($profile->field_name_first[LANGUAGE_NONE][0]['value']) ? $profile->field_name_first[LANGUAGE_NONE][0]['value'] : "";
+        $last_name = isset($profile->field_name_last[LANGUAGE_NONE][0]['value']) ? $profile->field_name_last[LANGUAGE_NONE][0]['value'] : "";
+      }
     }
-  }
-  if (!empty($first_name) || !empty($last_name)) {
-    $name = $first_name . ' ' . $last_name;
+    if (!empty($first_name) || !empty($last_name)) {
+      $name = $first_name . ' ' . $last_name;
+    }
   }
 }
 
