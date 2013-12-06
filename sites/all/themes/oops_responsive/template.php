@@ -24,3 +24,16 @@ function oops_responsive_preprocess_page(&$variables) {
   }
 }
 
+/**
+function oops_responsive_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'user_register_form') {
+    if ($form['#action'] == '/student/register') {
+      //$form['regcode']['#type'] = 'hidden';
+      $form['regcode']['regcode_code']['#required'] = FALSE;
+    }
+    dsm($form);
+    dsm(get_defined_vars());
+  }
+}
+ */
+

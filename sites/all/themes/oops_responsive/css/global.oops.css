@@ -184,9 +184,11 @@ ul.commons-utility-links a {
 
 .views-responsive-grid .views-row {
     border-bottom: medium none;
+    border-top: 2px solid #8AB8B6;
     float: left;
     margin-bottom: 0.7em;
     padding-bottom: 0.7em;
+    width: 100%;
 }
 
 .views-responsive-grid .views-column {
@@ -205,6 +207,15 @@ ul.commons-utility-links a {
     padding: 5px;
     width: 100px;
     text-align: center;
+}
+
+.pane-node-group-group .field-name-group-group .subscription-type {
+    display: none;
+}
+
+.pane-node-author a {
+    color: #8AB6B5;
+    font-size: 1.4em;
 }
 
 .node-type-mentor-group .panel-pane.pane-entity-field.pane-node-group-group.no-title.block {
@@ -232,7 +243,7 @@ ul.commons-utility-links a {
 .view-mentors-directory .views-field-group-group .subscription-type,
 .node-type-mentor-group .field-name-group-group .subscription-type
 {
-    display: none;
+   /** display: none;*/
 }
 
 .view-mentors-directory .views-field-picture {
@@ -256,10 +267,11 @@ ul.commons-utility-links a {
 
 .view-mentors-directory .views-field-body h3 {
     height: 40px;
+    color: #8ab8b6;
 }
 
 .view-mentors-directory .views-field-body h3 a {
-    color: #8AB6B5;
+    color: #8AB6B5 !important;
 }
 
 .page-group-node-subscribe h2#page-title {
@@ -276,6 +288,7 @@ form#og-ui-confirm-subscribe {
 #edit-field-upload-video {
     float: left;
     margin-right: 20px;
+    width: 500px;
 }
 
 #edit-field-application-steps {

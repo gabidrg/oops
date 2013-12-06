@@ -17,11 +17,6 @@ function oops_logic_node_presave($node) {
     }
 }
 
-
-function oops_logic_node_view_alter(&$build) {
-    //dsm($build);
-}
-
 /**
  * Acts on a OG membership being inserted or updated.
  *
@@ -57,11 +52,6 @@ function oops_logic_og_membership_update(OgMembership $og_membership) {
 
         // OPEN GROUP
         // current status delete
-
-        //dsm($limit);
-        //dsm($active_members);
-        dsm($og_membership);
-        dsm(get_defined_vars());
         // update group member count
         $updated = FALSE;
         if (!$updated) {
@@ -78,7 +68,6 @@ function oops_logic_form_og_ui_edit_membership_alter(&$form, &$form_state, $form
 }
 
 function oops_logic_og_ui_edit_membership_validate($form, &$form_state) {
-    dsm($form_state['values']);
     $values = $form_state['values'];
     $og_membership = $form_state['og_membership'];
     $new_status = $values['state'];
@@ -96,8 +85,13 @@ function oops_logic_og_ui_edit_membership_validate($form, &$form_state) {
  * Confirm subscribe form.
  */
 function oops_logic_form_og_ui_confirm_subscribe_alter(&$form, &$form_state, $form_id) {
-
+  global $user;
   $group = node_load($form['gid']['#value']);
+  $member = oops_utils_query_og_membership_exists($user->uid, $state = NULL);
+  if (count($member) > 0) {
+    drupal_set_message(t('You have already applied to a mentor group.'));
+    drupal_goto('user');
+  }
 
   if ($group->type == MENTOR_GROUP_TYPE) {
     // replace default membership with custom mentor_group bundle
@@ -112,6 +106,7 @@ function oops_logic_form_og_ui_confirm_subscribe_alter(&$form, &$form_state, $fo
     drupal_set_title(t('Apply for mentor group ' . $group->title));
   }
 
+  $form['#after_build'][] = 'oops_logic_og_ui_confirm_subscribe_after_build';
   $form['#validate'][] = 'oops_logic_og_ui_confirm_subscribe_validate';
 
 }
@@ -147,6 +142,13 @@ function oops_logic_og_membership_presave(OgMembership $og_membership) {
 }
  */
 
+function oops_logic_og_ui_confirm_subscribe_after_build($form, &$form_state) {
+  $path = drupal_get_path('module', 'oops_logic');
+  drupal_add_js ("$path/youtube.js");
+  drupal_add_js ("$path/youtube-process.js");
+  return $form;
+}
+
 /**
  * Custom validate handler; Confirm OG membership.
  *
@@ -164,7 +166,8 @@ function oops_logic_og_ui_confirm_subscribe_validate($form, &$form_state) {
         ->propertyCondition('gid', $gid, '=')
         ->propertyCondition('state', 1, '=');
     $result = $query->execute();
-    $members = count($result['og_membership']);
+    $members = count($result['og_membership']) - 1;
+
     if ($members >= $limit) {
         $subscribe_model = $group->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'];
         if ($subscribe_model != 'invitation') {
@@ -182,7 +185,7 @@ function oops_logic_og_ui_confirm_subscribe_validate($form, &$form_state) {
  */
 function oops_logic_form_mentor_group_node_form_alter(&$form, &$form_state) {
   //patched
-  $form['field_og_subscribe_settings']['#type'] = 'hidden';
+  //$form['field_og_subscribe_settings']['#type'] = 'hidden';
   $form['field_og_subscribe_settings'][LANGUAGE_NONE]['#required'] = FALSE;
 
   if (module_exists('og_access')) {
@@ -204,7 +207,6 @@ function oops_logic_form_mentor_group_node_form_alter(&$form, &$form_state) {
   // The group access is set on commons_groups_node_presave().
   $form['group_access'][LANGUAGE_NONE]['#required'] = FALSE;
   $form['group_access']['#access'] = FALSE;
-dsm($form);
 }
 
 /**
