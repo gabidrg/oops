@@ -185,7 +185,7 @@ function oops_logic_og_ui_confirm_subscribe_validate($form, &$form_state) {
  */
 function oops_logic_form_mentor_group_node_form_alter(&$form, &$form_state) {
   //patched
-  //$form['field_og_subscribe_settings']['#type'] = 'hidden';
+  $form['field_og_subscribe_settings']['#type'] = 'hidden';
   $form['field_og_subscribe_settings'][LANGUAGE_NONE]['#required'] = FALSE;
 
   if (module_exists('og_access')) {

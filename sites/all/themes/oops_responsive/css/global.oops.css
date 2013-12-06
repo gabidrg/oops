@@ -218,6 +218,11 @@ ul.commons-utility-links a {
     font-size: 1.4em;
 }
 
+.view-mentor-group-of-user .view-empty a {
+    color: #8AB6B5;
+    font-size: 1.4em;
+}
+
 .node-type-mentor-group .panel-pane.pane-entity-field.pane-node-group-group.no-title.block {
     float: left;
     margin-right: 10px;
