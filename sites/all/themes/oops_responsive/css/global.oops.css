@@ -30,6 +30,10 @@ button, [type="reset"], [type="submit"], [type="button"], [class*="action-item"]
 .block-content ul.commons-utility-links .signup {
     display: none;
 }
+.node-type-mentor-group .region-two-66-33-second .panel-pane {
+   box-shadow: none !important;
+}
+
 .panel-pane.pane-block.pane-oops-utils-oops-login-button.no-title.block {
     height: 100px;
 }
