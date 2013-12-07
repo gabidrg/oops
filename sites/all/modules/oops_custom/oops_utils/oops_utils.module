@@ -210,7 +210,7 @@ function oops_utils_query_og_membership_exists($uid, $state = NULL) {
 
 function oops_utils_render_fullname($account) {
   // Display the user's uid instead of name.
-  $name = $account->name;
+  $name = isset($account->name) ? $account->name : "";
   if ($account->uid != 0) {
     $profile2 = profile2_load_by_user($account);
     if (is_array($profile2)) {
