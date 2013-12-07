@@ -230,7 +230,6 @@ function oops_utils_render_fullname($account) {
 
 function oops_utils_preprocess_page(&$vars) {
   if (arg(0) == 'user') {
-    dsm(get_defined_vars());
     $title = oops_utils_render_fullname($vars['user']);
     drupal_set_title($title);
   }
