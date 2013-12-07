@@ -193,6 +193,11 @@ ul.commons-utility-links a {
     margin-bottom: 0.7em;
     padding-bottom: 0.7em;
     width: 100%;
+   
+}
+
+.view-mentors-directory .views-responsive-grid .views-row {
+    height: 150px !important;
 }
 
 .views-responsive-grid .views-column {
@@ -431,4 +436,12 @@ a.signup-librarian {
 }
 .in-maintenance h1.page-title {
     margin-top: 60px;
+}
+
+.views-field-field-name-last h3 {
+   padding-bottom: 10px;
+   margin-bottom: 0px;
+}
+.views-field-field-position {
+   padding-bottom: 10px;
 }
