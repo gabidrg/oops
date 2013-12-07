@@ -437,3 +437,8 @@ a.signup-librarian {
 .in-maintenance h1.page-title {
     margin-top: 60px;
 }
+
+.view-mentors-directory .views-field-field-name-last h3 {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}

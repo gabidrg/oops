@@ -207,8 +207,10 @@ function oops_utils_query_og_membership_exists($uid, $state = NULL) {
   return $members;
 }
 
-function oops_utils_username_alter(&$name, $account) {
+
+function oops_utils_render_fullname($account) {
   // Display the user's uid instead of name.
+  $name = $account->name;
   if ($account->uid != 0) {
     $profile2 = profile2_load_by_user($account);
     if (is_array($profile2)) {
@@ -221,6 +223,16 @@ function oops_utils_username_alter(&$name, $account) {
     if (!empty($first_name) || !empty($last_name)) {
       $name = $first_name . ' ' . $last_name;
     }
+  }
+  return $name;
+}
+
+
+function oops_utils_preprocess_page(&$vars) {
+  if (arg(0) == 'user') {
+    dsm(get_defined_vars());
+    $title = oops_utils_render_fullname($vars['user']);
+    drupal_set_title($title);
   }
 }
 
