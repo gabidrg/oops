@@ -29,6 +29,7 @@
                     <div id="tabs-profile-1">
                         <?php print render($form['profile_student']); ?>
                         <?php print render($form['profile_mentor']); ?>
+                        <?php print render($form['profile_librarian']); ?>
                     </div>
                     <div id="tabs-profile-2">
                         <?php print render($form['account']); ?>
