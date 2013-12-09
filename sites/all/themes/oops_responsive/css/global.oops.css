@@ -187,6 +187,10 @@ h1 a,h2 a,h3 a,h4 a,h5 a,h6 a
     width: 24em;
 }
 
+.logged-in .region-header {
+    margin-left: -280px;
+}
+
 ul.commons-utility-links {
     background-color: #592D72;
     float: right;
