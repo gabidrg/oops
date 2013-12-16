@@ -207,6 +207,7 @@ function oops_logic_form_mentor_group_node_form_alter(&$form, &$form_state) {
   // The group access is set on commons_groups_node_presave().
   $form['group_access'][LANGUAGE_NONE]['#required'] = FALSE;
   $form['group_access']['#access'] = FALSE;
+
 }
 
 /**
@@ -220,6 +221,99 @@ function oops_logic_form_group_node_after_build($form, $form_state) {
   return $form;
 }
 
+function oops_logic_profile2_insert($profile) {
+  $account = user_load($profile->uid);
+  switch ($profile->type) {
+    case 'student':
+      $county = isset($profile->field_county_name[LANGUAGE_NONE][0]['value']) ? filter_xss($profile->field_county_name[LANGUAGE_NONE][0]['value']) : FALSE;
+      if ($county) {
+        $group = oops_logic_load_group_by_county($county);
+        oops_logic_og_group($group, $account, $role = 2);
+      }
+      break;
+    case 'librarian':
+      $county = isset($profile->field_county_name[LANGUAGE_NONE][0]['value']) ? filter_xss($profile->field_county_name[LANGUAGE_NONE][0]['value']) : FALSE;
+      if ($county) {
+        $group = oops_logic_load_group_by_county($county);
+        oops_logic_og_group($group, $account, $role = 3);
+      }
+      break;
+  }
+}
+
+function oops_logic_profile2_update($profile) {
+  $account = user_load($profile->uid);
+  switch ($profile->type) {
+    // register users in county level groups
+    case 'student':
+      $county = isset($profile->field_county_name[LANGUAGE_NONE][0]['value']) ? filter_xss($profile->field_county_name[LANGUAGE_NONE][0]['value']) : FALSE;
+      if ($county) {
+        $group = oops_logic_load_group_by_county($county);
+        $membership = oops_utils_query_og_county_membership_exists($account->uid, $group->nid, $state = NULL);
+        //dsm($membership);
+        if (count($membership) == 0) {
+          oops_logic_og_group($group, $account, $role = 2);
+        }
+      }
+      break;
+    case 'librarian':
+      $county = isset($profile->field_county_name[LANGUAGE_NONE][0]['value']) ? filter_xss($profile->field_county_name[LANGUAGE_NONE][0]['value']) : FALSE;
+      if ($county) {
+        $group = oops_logic_load_group_by_county($county);
+        $membership = oops_utils_query_og_county_membership_exists($account->uid, $group->nid, $state = NULL);
+        if (count($membership) == 0) {
+          oops_logic_og_group($group, $account, $role = 3);
+        }
+      }
+      break;
+  }
+}
+
+function oops_logic_load_group_by_county($county) {
+  $query = new EntityFieldQuery();
+  $query
+    ->entityCondition('entity_type', 'node', '=')
+    ->fieldCondition('field_county_name', 'value', $county)
+    ->propertyCondition('type', 'group', '=');
+
+  $result = $query->execute();
+  if (isset($result['node'])) {
+    $group_id = array_keys($result['node']);
+    $group = entity_load('node', $group_id);
+  }
+  //dsm($county);
+  //dsm($group);
+  //dsm($group_id);
+  return $group[$group_id[0]];
+}
+
+// Changes the users role in the group (1 = non-member, 2 = member, 3 = administrator member)
+function oops_logic_og_group($group, $account, $role) {
+  og_group('node', $group->nid, array(
+    "entity type"       => "user",
+    "entity"        => $account,
+    "membership type"   => OG_MEMBERSHIP_TYPE_DEFAULT,
+  ));
+  og_role_grant('node', $group->nid, $account->uid, $role);
+}
+
+function oops_utils_query_og_county_membership_exists($uid, $gid, $state = NULL) {
+  $query = new EntityFieldQuery();
+  $query
+    ->entityCondition('entity_type', 'og_membership', '=')
+    ->propertyCondition('type', 'og_membership_type_default', '=')
+    ->propertyCondition('entity_type', 'user', '=')
+    ->propertyCondition('group_type', 'node', '=')
+    ->propertyCondition('gid', $gid, '=')
+    ->propertyCondition('etid', $uid, '=');
+
+  if ($state != NULL) {
+    $query->propertyCondition('state', $state, '=');
+  }
+  $result = $query->execute();
+  $members = isset($result['og_membership']) ? $result['og_membership'] : array();
+  return $members;
+}
 
 // TODO: form alter group edit and if limit < members only allow invite membership
 // TODO: form alter group admin form and set group model to invitation when new members approved and limit is reached
