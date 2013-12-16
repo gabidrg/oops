@@ -228,14 +228,26 @@ function oops_logic_profile2_insert($profile) {
       $county = isset($profile->field_county_name[LANGUAGE_NONE][0]['value']) ? filter_xss($profile->field_county_name[LANGUAGE_NONE][0]['value']) : FALSE;
       if ($county) {
         $group = oops_logic_load_group_by_county($county);
-        oops_logic_og_group($group, $account, $role = 2);
+        $roles = og_roles($group_type = 'node', $bundle = 'group', $group->nid, $force_group = FALSE, $include_all = TRUE);
+        foreach ($roles as $key => $role) {
+          if ($role == 'member') {
+            $rid = $key;
+          }
+        }
+        oops_logic_og_group($group, $account, $rid);
       }
       break;
     case 'librarian':
       $county = isset($profile->field_county_name[LANGUAGE_NONE][0]['value']) ? filter_xss($profile->field_county_name[LANGUAGE_NONE][0]['value']) : FALSE;
       if ($county) {
         $group = oops_logic_load_group_by_county($county);
-        oops_logic_og_group($group, $account, $role = 3);
+        $roles = og_roles($group_type = 'node', $bundle = 'group', $group->nid, $force_group = FALSE, $include_all = TRUE);
+        foreach ($roles as $key => $role) {
+          if ($role == 'administrator member') {
+            $rid = $key;
+          }
+        }
+        oops_logic_og_group($group, $account, $rid);
       }
       break;
   }
@@ -252,7 +264,15 @@ function oops_logic_profile2_update($profile) {
         $membership = oops_utils_query_og_county_membership_exists($account->uid, $group->nid, $state = NULL);
         //dsm($membership);
         if (count($membership) == 0) {
-          oops_logic_og_group($group, $account, $role = 2);
+          if (count($membership) == 0) {
+            $roles = og_roles($group_type = 'node', $bundle = 'group', $group->nid, $force_group = FALSE, $include_all = TRUE);
+            foreach ($roles as $key => $role) {
+              if ($role == 'member') {
+                $rid = $key;
+              }
+            }
+            oops_logic_og_group($group, $account, $rid);
+          }
         }
       }
       break;
@@ -262,7 +282,13 @@ function oops_logic_profile2_update($profile) {
         $group = oops_logic_load_group_by_county($county);
         $membership = oops_utils_query_og_county_membership_exists($account->uid, $group->nid, $state = NULL);
         if (count($membership) == 0) {
-          oops_logic_og_group($group, $account, $role = 3);
+          $roles = og_roles($group_type = 'node', $bundle = 'group', $group->nid, $force_group = FALSE, $include_all = TRUE);
+          foreach ($roles as $key => $role) {
+            if ($role == 'administrator member') {
+              $rid = $key;
+            }
+          }
+          oops_logic_og_group($group, $account, $rid);
         }
       }
       break;
