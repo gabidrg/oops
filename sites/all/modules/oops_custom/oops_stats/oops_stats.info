@@ -1,0 +1,5 @@
+name = Oops Stats
+description = "Provides various statistics building functions for OpeningOpportunities platform."
+core = 7.x
+; files[] = oops_utils.test
+; configure = admin/config/oops

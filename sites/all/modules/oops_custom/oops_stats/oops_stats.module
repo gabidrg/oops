@@ -1,0 +1,169 @@
+<?php
+
+/**
+ * @file
+ * The Oops Stats module provides various statistics functions for the platform.
+ */
+
+function oops_stats_total_groups($type = array()) {
+  $query = new EntityFieldQuery();
+  $query
+    ->entityCondition('entity_type', 'node', '=')
+    ->fieldCondition('field_county_name', 'value', $county);
+
+  if (count($type) > 0) {
+    $query->propertyCondition('type', $type, 'IN');
+  }
+
+  $result = $query->execute();
+
+  return $result;
+}
+
+function oops_stats_analytics_dashboard() {
+  $period = _get_time_from_url();
+  $from = isset($period[0]) ? $period[0] : strtotime('-1 month');
+  $to   = isset($period[1]) ? $period[1] : time();
+  $header = $nodes = $comments = $votes = $users = array();
+  //==================================
+  // Chart for mentor group created by day.
+  //==================================
+  if (module_exists('node')) {
+    $i = 0;
+    $f = $from;
+    while ($f <= $to) {
+      // Building the header - list of date from today backward.
+      $header[$i] = date('d.m.y', $f);
+      // The number of nodes created each day.
+      $nodes[$i] = db_query("SELECT COUNT(*) FROM {node} n WHERE FROM_UNIXTIME(created,'%d.%m.%y') = :dete AND n.type = :gtype", array(':dete' => $header[$i], ':gtype' => 'mentor_group'))->fetchField();
+      $i++;
+      $f = strtotime("+1 day", $f);
+    }
+    // Building the rows, array of the data point arrays.
+    $rows = array($nodes);
+
+    // The labels for the rows.
+    $columns = array('No. Of Mentor Groups');
+
+    // Put all the data into the settings array,
+    // which will be send to draw.
+
+    // Must empty the array first.
+    $settings = array();
+    $settings['chart']['chartMentorGroups'] = array(
+      'header' => $header,
+      'rows' => $rows,
+      'columns' => $columns,
+      'chartType' => GOOGLE_CHART_TOOLS_DEFAULT_CHART,
+      'options' => array( // Optionals.
+        'curveType' => "function",
+        'forceIFrame' => FALSE,
+        'title' => 'Mentor groups created per day. (Total:' . array_sum($nodes) . ')',
+        'width' => 640,
+        'height' => 320
+      )
+    );
+
+    // Draw it.
+    $ret[] = draw_chart($settings);
+  }
+
+  //==================================
+  // Chart for applications submitted by day.
+  //==================================
+  if (module_exists('og')) {
+    $i = 0;
+    $f = $from;
+    while ($f <= $to) {
+      // Building the header - list of date from today backward.
+      $header[$i] = date('d.m.y', $f);
+      // The number of nodes created each day.
+      $nodes[$i] = db_query(
+        "SELECT COUNT(*) FROM {og_membership} om WHERE FROM_UNIXTIME(created,'%d.%m.%y') = :dete AND om.type = :mtype AND om.entity_type = :etype AND om.group_type = :gtype",
+        array(':dete' => $header[$i], ':mtype' => MENTOR_GROUP_MEMBERSHIP_TYPE, ':etype' => 'user', ':gtype' => 'node'))
+        ->fetchField();
+      $i++;
+      $f = strtotime("+1 day", $f);
+    }
+    // Building the rows, array of the data point arrays.
+    $rows = array($nodes);
+    // The labels for the rows.
+    $columns = array('No. applications for mentor groups');
+    // Put all the data into the settings array,
+    // which will be send to draw.
+
+    // Must empty the array first.
+    $settings = array();
+    $settings['chart']['chartMentorGroupsApps'] = array(
+      'header' => $header,
+      'rows' => $rows,
+      'columns' => $columns,
+      'chartType' => GOOGLE_CHART_TOOLS_DEFAULT_CHART,
+      'options' => array( // Optionals.
+        'curveType' => "function",
+        'forceIFrame' => FALSE,
+        'title' => 'Applications for mentors per day (Total: ' . array_sum($nodes) . ')',
+        'width' => 640,
+        'height' => 320
+      )
+    );
+
+    // Draw it.
+    $ret[] = draw_chart($settings);
+  }
+
+  /**
+  //==================================
+  // Chart for approved applications.
+  //==================================
+  if (module_exists('og')) {
+    $i = 0;
+    $f = $from;
+    while ($f <= $to) {
+      // Building the header - list of date from today backward.
+      $header[$i] = date('d.m.y', $f);
+      // The number of nodes created each day.
+      $nodes[$i] = db_query(
+        "SELECT COUNT(*), fc.field_county_name_value FROM {og_membership} og
+         LEFT JOIN {field_data_field_county_name} fc ON fc.entity_id = og.etid
+         LEFT JOIN
+         WHERE FROM_UNIXTIME(created,'%d.%m.%y') = :dete AND
+         og.type = :mtype AND
+         og.entity_type = :etype AND
+         og.group_type = :gtype
+         GROUP BY fc.field_county_name_value",
+         array(':dete' => $header[$i], ':mtype' => MENTOR_GROUP_MEMBERSHIP_TYPE, ':etype' => 'user', ':gtype' => 'node'))
+        ->fetchCol();
+      $i++;
+      $f = strtotime("+1 day", $f);
+    }
+    // Building the rows, array of the data point arrays.
+    $rows = array($nodes);
+    // The labels for the rows.
+    $columns = array('No. applications per county');
+    // Put all the data into the settings array,
+    // which will be send to draw.
+dsm($nodes);
+    // Must empty the array first.
+    $settings = array();
+    $settings['chart']['chartMentorGroupsAppsCounty'] = array(
+      'header' => $header,
+      'rows' => $rows,
+      'columns' => $columns,
+      'chartType' => 'BarChart',
+      'options' => array( // Optionals.
+        'curveType' => "function",
+        'forceIFrame' => FALSE,
+        'title' => 'Applications for mentors per county (Total: ' . array_sum($nodes) . ')',
+        'width' => 640,
+        'height' => 320
+      )
+    );
+
+    // Draw it.
+    $ret[] = draw_chart($settings);
+  }
+   */
+  return $ret;
+
+}
