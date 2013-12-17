@@ -262,8 +262,13 @@ ul.commons-utility-links a {
 {
     clear: left;
     float: left;
-    height: 30px;
-    margin-bottom: 0;
+    height: 20px;
+    margin: 0;
+    padding: 0 10px;
+}
+
+.node-type-mentor-group .panel-pane .field-label-inline {
+    margin: 5px 0;
 }
 
 .view-mentors-directory .views-field-group-group a,
@@ -477,4 +482,12 @@ a.signup-librarian {
 
 .view-mentor-group-of-mentor .views-field-title a {
     font-size: 1.4em;
+}
+
+td.views-field-views-send {
+    width: 50px;
+}
+
+.node-type-mentor-group .panel-pane .field-name-field-group-members {
+    margin: 0;
 }
