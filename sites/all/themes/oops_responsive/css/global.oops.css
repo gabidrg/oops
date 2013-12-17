@@ -478,3 +478,7 @@ a.signup-librarian {
 .view-mentor-group-of-mentor .views-field-title a {
     font-size: 1.4em;
 }
+
+.pane-commons-contributors-group-panel-pane-2 h2 {
+    display: none;
+}
