@@ -9,10 +9,20 @@ define('MENTOR_GROUP_TYPE', 'mentor_group');
 define('MENTOR_GROUP_MEMBERSHIP_TYPE', 'mentor_group_membership');
 
 
+function oops_logic_permission() {
+  return array(
+    'apply to mentor groups' => array(
+      'title' => t('Apply to mentor groups'),
+      'description' => t('Allow users to apply for mentor groups membership.'),
+    ),
+  );
+}
+
 function oops_logic_node_presave($node) {
     switch ($node->type) {
         case 'mentor_group':
-            $node->field_group_members[LANGUAGE_NONE][0]['value'] = count(oops_utils_query_og_members($node->nid, 1));
+            // total members - admin members
+            $node->field_group_members[LANGUAGE_NONE][0]['value'] = count(oops_utils_query_og_members($node->nid, 1)) - 1;
             break;
     }
 }
@@ -35,29 +45,32 @@ function oops_logic_og_membership_update(OgMembership $og_membership) {
         $new_status = $og_membership->state;
         $old_status = $og_membership->original->state;
         $group = entity_load_single($og_membership->group_type, $og_membership->gid);
-        $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'];
-        $active_members = count(oops_utils_query_og_members($og_membership->gid, 1));
+        if ($group->type == MENTOR_GROUP_TYPE) {
+          $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'];
+          $active_members = count(oops_utils_query_og_members($og_membership->gid, 1));
 
-        // CLOSE GROUP
-        // pending to active
-        if ($old_status == 1 && $new_status == 2) {
+          // CLOSE GROUP
+          // pending to active
+          if ($old_status == 1 && $new_status == 2) {
 
-        }
+          }
 
-        switch ($new_status) {
-            case 1:
+          switch ($new_status) {
+              case 1:
 
-        }
+          }
 
 
-        // OPEN GROUP
-        // current status delete
-        // update group member count
-        $updated = FALSE;
-        if (!$updated) {
-            $group->field_group_members[LANGUAGE_NONE][0]['value'] = $active_members;
-            entity_save($og_membership->group_type, $group);
-            $updated = TRUE;
+          // OPEN GROUP
+          // current status delete
+          // update group member count
+          $updated = FALSE;
+          if (!$updated) {
+              $group->field_group_members[LANGUAGE_NONE][0]['value'] = $active_members;
+              entity_save($og_membership->group_type, $group);
+              $updated = TRUE;
+          }
+
         }
 
     }
@@ -339,6 +352,14 @@ function oops_utils_query_og_county_membership_exists($uid, $gid, $state = NULL)
   $result = $query->execute();
   $members = isset($result['og_membership']) ? $result['og_membership'] : array();
   return $members;
+}
+
+function oops_logic_check_user_application_link_access($account) {
+  $member = oops_utils_query_og_membership_exists($account->uid, $state = NULL);
+  if (user_access('apply to mentor groups', $account) && count($member) == 0) {
+    return TRUE;
+  }
+  return FALSE;
 }
 
 // TODO: form alter group edit and if limit < members only allow invite membership
