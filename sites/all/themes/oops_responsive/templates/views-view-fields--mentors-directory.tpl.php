@@ -36,7 +36,7 @@
 
         print $field->wrapper_prefix;
         print $field->label_html;
-        print $field->content; dsm($id);
+        print $field->content;
         print $field->wrapper_suffix;
       }
     }
