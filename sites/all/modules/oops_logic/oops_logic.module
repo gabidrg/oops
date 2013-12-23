@@ -45,32 +45,32 @@ function oops_logic_og_membership_update(OgMembership $og_membership) {
         $new_status = $og_membership->state;
         $old_status = $og_membership->original->state;
         $group = entity_load_single($og_membership->group_type, $og_membership->gid);
-        if ($group->type == MENTOR_GROUP_TYPE) {
-          $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'];
-          $active_members = count(oops_utils_query_og_members($og_membership->gid, 1));
+        if (isset($group->type)) {
+          if ($group->type == MENTOR_GROUP_TYPE) {
+            $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'];
+            $active_members = count(oops_utils_query_og_members($og_membership->gid, 1));
 
-          // CLOSE GROUP
-          // pending to active
-          if ($old_status == 1 && $new_status == 2) {
+            // CLOSE GROUP
+            // pending to active
+            if ($old_status == 1 && $new_status == 2) {
 
+            }
+
+            switch ($new_status) {
+                case 1:
+
+            }
+
+            // OPEN GROUP
+            // current status delete
+            // update group member count
+            $updated = FALSE;
+            if (!$updated) {
+                $group->field_group_members[LANGUAGE_NONE][0]['value'] = $active_members;
+                entity_save($og_membership->group_type, $group);
+                $updated = TRUE;
+            }
           }
-
-          switch ($new_status) {
-              case 1:
-
-          }
-
-
-          // OPEN GROUP
-          // current status delete
-          // update group member count
-          $updated = FALSE;
-          if (!$updated) {
-              $group->field_group_members[LANGUAGE_NONE][0]['value'] = $active_members;
-              entity_save($og_membership->group_type, $group);
-              $updated = TRUE;
-          }
-
         }
 
     }

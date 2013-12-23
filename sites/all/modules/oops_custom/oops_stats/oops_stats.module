@@ -112,49 +112,48 @@ function oops_stats_analytics_dashboard() {
     $ret[] = draw_chart($settings);
   }
 
-  /**
+
   //==================================
   // Chart for approved applications.
   //==================================
   if (module_exists('og')) {
-    $i = 0;
-    $f = $from;
-    while ($f <= $to) {
-      // Building the header - list of date from today backward.
-      $header[$i] = date('d.m.y', $f);
-      // The number of nodes created each day.
-      $nodes[$i] = db_query(
-        "SELECT COUNT(*), fc.field_county_name_value FROM {og_membership} og
-         LEFT JOIN {field_data_field_county_name} fc ON fc.entity_id = og.etid
-         LEFT JOIN
-         WHERE FROM_UNIXTIME(created,'%d.%m.%y') = :dete AND
-         og.type = :mtype AND
-         og.entity_type = :etype AND
-         og.group_type = :gtype
+
+    $nodes = db_query(
+        "SELECT COUNT(*), fc.field_county_name_value FROM {og_membership} om
+         LEFT JOIN {field_data_field_county_name} fc ON fc.entity_id = om.etid
+         WHERE
+         om.type = :mtype AND
+         om.entity_type = :etype AND
+         om.group_type = :gtype
          GROUP BY fc.field_county_name_value",
-         array(':dete' => $header[$i], ':mtype' => MENTOR_GROUP_MEMBERSHIP_TYPE, ':etype' => 'user', ':gtype' => 'node'))
-        ->fetchCol();
-      $i++;
-      $f = strtotime("+1 day", $f);
-    }
+         array(':mtype' => MENTOR_GROUP_MEMBERSHIP_TYPE, ':etype' => 'user', ':gtype' => 'node'))
+        ->fetchAllKeyed(1,0);
+
     // Building the rows, array of the data point arrays.
-    $rows = array($nodes);
+    $rows = array();
+    $columns = array();
+    foreach ($nodes as $key => $value) {
+      $rows[] = $value;
+      $columns[] = $key;
+    }
+    //$rows = array($nodes);
     // The labels for the rows.
-    $columns = array('No. applications per county');
+    //$columns = array('No. applications per county');
     // Put all the data into the settings array,
     // which will be send to draw.
 dsm($nodes);
+    dsm($rows);
     // Must empty the array first.
     $settings = array();
     $settings['chart']['chartMentorGroupsAppsCounty'] = array(
-      'header' => $header,
+      'header' => $columns,
       'rows' => $rows,
       'columns' => $columns,
-      'chartType' => 'BarChart',
+      'chartType' => 'Table',
       'options' => array( // Optionals.
         'curveType' => "function",
         'forceIFrame' => FALSE,
-        'title' => 'Applications for mentors per county (Total: ' . array_sum($nodes) . ')',
+        'title' => 'Applications for mentors per county (Total: ' . array_sum($rows) . ')',
         'width' => 640,
         'height' => 320
       )
@@ -163,7 +162,7 @@ dsm($nodes);
     // Draw it.
     $ret[] = draw_chart($settings);
   }
-   */
+
   return $ret;
 
 }

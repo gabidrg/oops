@@ -12,7 +12,8 @@
  */
 function oops_utils_menu_alter(&$items) {
   $items['messages/new']['access callback'] = 'oops_utils_privatemsg_write_access';
-
+  $items['messages']['access callback'] = 'privatemsg_user_access';
+  $items['messages/inbox']['access callback'] = 'privatemsg_user_access';
 }
 
 /**
@@ -24,7 +25,10 @@ function oops_utils_menu_alter(&$items) {
  *    Addressee's user object or User ID.
  */
 function oops_utils_privatemsg_write_access($account) {
-  global $user;
+  if ( $account === NULL ) {
+    global $user;
+    $account = $user;
+  }
 
   if (user_access('administer group') || user_access('create group content')) {
     // Always allow admin to send private messages.
@@ -131,9 +135,9 @@ function oops_utils_block_view($delta = '') {
  * Implements hook_form_alter().
  */
 function oops_utils_form_alter(&$form, &$form_state, $form_id) {
-    if ($form_id == 'user_profile_form') {
+  if ($form_id == 'user_profile_form') {
         $form['#theme'] = array('user_profile_form');
-    }
+  }
   if ($form_id == 'user_register_form') {
     $form['#theme'] = array('user_register_form');
     // dsm($form);
@@ -142,7 +146,20 @@ function oops_utils_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'mentor_group_node_form') {
     $form['field_group_members']['#type'] = 'hidden';
   }
+  if ($form_id == 'commons_trusted_contacts_messages_popup') {
+    $form['actions']['submit']['#submit'][] = 'oops_utils_commons_trusted_contacts_messages_popup_submit';
+    dsm($form_id);
+    dsm($form);
+    dsm($form_state);
+  }
 
+}
+
+function oops_utils_commons_trusted_contacts_messages_popup_submit($form, &$form_state) {
+
+  $form_state['redirect'] = array('user/' . $form['author']['#value']->uid . '/contacts', array('query' => array('qt-commons_trusted_contacts' => 'messages'), 'fragment' => 'qt-commons_trusted_contacts'));
+  dsm($form);
+  dsm($form_state);
 }
 
 function oops_utils_theme($existing, $type, $theme, $path){
@@ -325,4 +342,5 @@ function oops_utils_librarian_students() {
     }
   }
 }
+
 
