@@ -148,18 +148,12 @@ function oops_utils_form_alter(&$form, &$form_state, $form_id) {
   }
   if ($form_id == 'commons_trusted_contacts_messages_popup') {
     $form['actions']['submit']['#submit'][] = 'oops_utils_commons_trusted_contacts_messages_popup_submit';
-    dsm($form_id);
-    dsm($form);
-    dsm($form_state);
   }
 
 }
 
 function oops_utils_commons_trusted_contacts_messages_popup_submit($form, &$form_state) {
-
   $form_state['redirect'] = array('user/' . $form['author']['#value']->uid . '/contacts', array('query' => array('qt-commons_trusted_contacts' => 'messages'), 'fragment' => 'qt-commons_trusted_contacts'));
-  dsm($form);
-  dsm($form_state);
 }
 
 function oops_utils_theme($existing, $type, $theme, $path){
