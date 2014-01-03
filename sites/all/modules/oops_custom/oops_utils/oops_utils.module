@@ -292,7 +292,7 @@ function oops_utils_menu_local_tasks_alter(&$data, $router_item, $root_path) {
   global $user;
   if (in_array('mentor', $user->roles)) {
     $root_paths = array('user/%');
-    if (in_array($root_path, $root_paths)) {
+    if (in_array($root_path, $root_paths) && ($user->uid == arg(1))) {
       $view = views_get_view('mentor_group_of_mentor');
       $view->set_display('default');
       $view->set_arguments(array($user->uid));
@@ -337,4 +337,23 @@ function oops_utils_librarian_students() {
   }
 }
 
+/**
+ * Implementation of hook_og_ui_get_group_admin_alter()
+ *
+ * Removes roles and permissions links for non super-admin users.
+ *
+ * @param $data
+ * @param $gid
+ */
+function oops_utils_og_ui_get_group_admin_alter(&$data, $gid) {
+  global $user;
+  if ($user->uid > 1) {
+    if (isset($data['roles'])) {
+      unset($data['roles']);
+    }
+    if (isset($data['permissions'])) {
+      unset($data['permissions']);
+    }
+  }
 
+}
