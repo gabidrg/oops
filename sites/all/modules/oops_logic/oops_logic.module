@@ -21,9 +21,21 @@ function oops_logic_permission() {
 function oops_logic_node_presave($node) {
     switch ($node->type) {
         case 'mentor_group':
-            // total members - admin members
-            $node->field_group_members[LANGUAGE_NONE][0]['value'] = count(oops_utils_query_og_members($node->nid, 1)) - 1;
-            break;
+          $limit = $node->field_max_group_members[LANGUAGE_NONE][0]['value'] + 1;
+          $active_members = count(oops_utils_query_og_members($node->nid, 1));
+          $node->field_group_members[LANGUAGE_NONE][0]['value'] = $active_members;
+
+          // open group if limit was increased
+          if ($node->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'] == 'invitation' && ($active_members < $limit)) {
+            $node->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'] = 'approval';
+          }
+
+          // close group if limit was reached
+          if ($active_members >= $limit) {
+            $node->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'] = 'invitation';
+          }
+
+          break;
     }
 }
 
@@ -47,22 +59,28 @@ function oops_logic_og_membership_update(OgMembership $og_membership) {
         $group = entity_load_single($og_membership->group_type, $og_membership->gid);
         if (isset($group->type)) {
           if ($group->type == MENTOR_GROUP_TYPE) {
-            $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'];
+            $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'] + 1;
             $active_members = count(oops_utils_query_og_members($og_membership->gid, 1));
 
             // CLOSE GROUP
             // pending to active
-            if ($old_status == 1 && $new_status == 2) {
+            // invitation vs approval
 
+            if (($old_status == 2 && $new_status == 1) || ($old_status == 3 && $new_status == 1)) {
+              if ($active_members == $limit) {
+                $group->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'] = 'invitation';
+              }
             }
 
-            switch ($new_status) {
-                case 1:
-
+            // OPEN GROUP when membership is blocked
+            if ($new_status == 3) {
+               if ($group->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'] == 'invitation' && ($active_members < $limit)) {
+                  $group->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'] = 'approval';
+               }
             }
 
-            // OPEN GROUP
-            // current status delete
+            // OPEN GROUP when membership is deleted
+
             // update group member count
             $updated = FALSE;
             if (!$updated) {
@@ -74,6 +92,29 @@ function oops_logic_og_membership_update(OgMembership $og_membership) {
         }
 
     }
+}
+
+function oops_logic_entity_delete($entity, $type) {
+  if ($type == 'og_membership') {
+    if ($entity->type == MENTOR_GROUP_MEMBERSHIP_TYPE) {
+      $group = entity_load_single($entity->group_type, $entity->gid);
+      if (isset($group->type)) {
+        if ($group->type == MENTOR_GROUP_TYPE) {
+          $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'] + 1;
+          $active_members = count(oops_utils_query_og_members($entity->gid, 1));
+          if ($group->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'] == 'invitation' && ($active_members < $limit)) {
+            $group->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'] = 'approval';
+          }
+          $updated = FALSE;
+          if (!$updated) {
+            $group->field_group_members[LANGUAGE_NONE][0]['value'] = $active_members;
+            entity_save($entity->group_type, $group);
+            $updated = TRUE;
+          }
+        }
+      }
+    }
+  }
 }
 
 function oops_logic_form_og_ui_edit_membership_alter(&$form, &$form_state, $form_id) {
@@ -171,15 +212,8 @@ function oops_logic_og_ui_confirm_subscribe_validate($form, &$form_state) {
     $group_type = $form_state['values']['group_type'];
     $gid = $form_state['values']['gid'];
     $group = entity_load_single($group_type, $gid);
-    $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'];
-    $query = new EntityFieldQuery();
-    $query
-        ->entityCondition('entity_type', 'og_membership', '=')
-        ->propertyCondition('entity_type', 'user', '=')
-        ->propertyCondition('gid', $gid, '=')
-        ->propertyCondition('state', 1, '=');
-    $result = $query->execute();
-    $members = count($result['og_membership']) - 1;
+    $limit = $group->field_max_group_members[LANGUAGE_NONE][0]['value'] + 1;
+    $members = count(oops_utils_query_og_members($gid, 1));
 
     if ($members >= $limit) {
         $subscribe_model = $group->field_og_subscribe_settings[LANGUAGE_NONE][0]['value'];
