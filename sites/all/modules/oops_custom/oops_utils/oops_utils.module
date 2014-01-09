@@ -222,9 +222,10 @@ function oops_utils_user_form_process_password_confirm($element) {
 function oops_utils_query_og_members($gid, $state = NULL) {
     $query = new EntityFieldQuery();
     $query
-        ->entityCondition('entity_type', 'og_membership', '=')
-        ->propertyCondition('entity_type', 'user', '=')
-        ->propertyCondition('gid', $gid, '=');
+      ->entityCondition('entity_type', 'og_membership', '=')
+      ->propertyCondition('type', array('mentor_group_membership', 'og_membership_type_default'), 'IN')
+      ->propertyCondition('entity_type', 'user', '=')
+      ->propertyCondition('gid', $gid, '=');
     if ($state != NULL) {
         $query->propertyCondition('state', $state, '=');
     }
