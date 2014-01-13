@@ -499,5 +499,13 @@ td.views-field-views-send {
 #edit-select .form-item.form-type-select.form-item-operation {
     display: block;
     float: left;
-    margin: 7px 5px 0 0;
+    margin: 6px 5px 0 0;
+}
+
+#edit-select select, #edit-select input {
+    font-family: Arvo, serif !important;
+}
+
+a.action-item-small, span.action-item-small-active {
+    color: #43105F !important;
 }
