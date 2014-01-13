@@ -14,6 +14,7 @@ function oops_utils_menu_alter(&$items) {
   $items['messages/new']['access callback'] = 'oops_utils_privatemsg_write_access';
   $items['messages']['access callback'] = 'privatemsg_user_access';
   $items['messages/inbox']['access callback'] = 'privatemsg_user_access';
+  $items['group/%/%/admin/people']['title arguments'] = array('@group', 1, 2);
 }
 
 /**
